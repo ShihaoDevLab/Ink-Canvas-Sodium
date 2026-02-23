@@ -80,7 +80,10 @@ namespace Ink_Canvas {
                 
                 return true;
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                LogHelper.NewLog(ex);
+            }
 
             return false;
         }
@@ -91,7 +94,10 @@ namespace Ink_Canvas {
                                       ".lnk");
                 return true;
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                LogHelper.NewLog(ex);
+            }
 
             return false;
         }

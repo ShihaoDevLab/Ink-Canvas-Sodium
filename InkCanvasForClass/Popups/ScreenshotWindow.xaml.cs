@@ -328,33 +328,41 @@ namespace Ink_Canvas.Popups
                         Radius = 32,
                     };
                 });
-                var wins = await mainWindow.GetAllWindowsAsync(new HWND[] {
-                    new HWND(new WindowInteropHelper(this).Handle)
-                });
-                foreach (var windowInformation in wins) {
-                    var bitmapHeight = windowInformation.WindowBitmap.Height;
-                    var w = windowInformation.WindowBitmap.Width * (226D / bitmapHeight);
-                    var allonecolor = await AllOneColorAsync(windowInformation.WindowBitmap);
-                    _winInfos.Add(new WinInfo() {
-                        Title = windowInformation.Title,
-                        Snapshot = BitmapToImageSource(windowInformation.WindowBitmap.Clone(windowInformation.ContentRect,windowInformation.WindowBitmap.PixelFormat)),
-                        Handle = windowInformation.hwnd,
-                        OriginBitmap = windowInformation.WindowBitmap,
-                        Icon = windowInformation.AppIcon == null ? new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/classic-icons/program-icon.png")) : IconToImageSource(windowInformation.AppIcon),
-                        Width = w,
-                        TextBlockWidth = w - 48 - 8,
-                        IsAllOneColor = allonecolor,
-                        IsDisplayFailedBorder = allonecolor,
-                        IsHidden = settings.Snapshot.OnlySnapshotMaximizeWindow,
+                try {
+                    var wins = await mainWindow.GetAllWindowsAsync(new HWND[] {
+                        new HWND(new WindowInteropHelper(this).Handle)
                     });
-                    if (Array.IndexOf(wins, windowInformation)>= wins.Length - 1) await Dispatcher.InvokeAsync(() => {
+                    foreach (var windowInformation in wins) {
+                        var bitmapHeight = windowInformation.WindowBitmap.Height;
+                        var w = windowInformation.WindowBitmap.Width * (226D / bitmapHeight);
+                        var allonecolor = await AllOneColorAsync(windowInformation.WindowBitmap);
+                        _winInfos.Add(new WinInfo() {
+                            Title = windowInformation.Title,
+                            Snapshot = BitmapToImageSource(windowInformation.WindowBitmap.Clone(windowInformation.ContentRect, windowInformation.WindowBitmap.PixelFormat)),
+                            Handle = windowInformation.hwnd,
+                            OriginBitmap = windowInformation.WindowBitmap,
+                            Icon = windowInformation.AppIcon == null ? new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/classic-icons/program-icon.png")) : IconToImageSource(windowInformation.AppIcon),
+                            Width = w,
+                            TextBlockWidth = w - 48 - 8,
+                            IsAllOneColor = allonecolor,
+                            IsDisplayFailedBorder = allonecolor,
+                            IsHidden = settings.Snapshot.OnlySnapshotMaximizeWindow,
+                        });
+                        if (Array.IndexOf(wins, windowInformation) >= wins.Length - 1) await Dispatcher.InvokeAsync(() => {
+                            WindowScreenshotWindowsGrid.Effect = null;
+                            WindowsSnapshotLoadingOverlay.Visibility = Visibility.Collapsed;
+                        });
+                    }
+                    await Dispatcher.InvokeAsync(() => {
                         WindowScreenshotWindowsGrid.Effect = null;
-                        WindowsSnapshotLoadingOverlay.Visibility = Visibility.Collapsed;});
+                        WindowsSnapshotLoadingOverlay.Visibility = Visibility.Collapsed;
+                    });
+                    isWindowsSnapshotLoaded = true;
+                } catch (Exception ex) {
+                    LogHelper.NewLog(ex);
+                    mainWindow.ShowNewToast("获取窗口列表失败", MW_Toast.ToastType.Error, 3000);
+                    Close();
                 }
-                await Dispatcher.InvokeAsync(() => {
-                    WindowScreenshotWindowsGrid.Effect = null;
-                    WindowsSnapshotLoadingOverlay.Visibility = Visibility.Collapsed;});
-                isWindowsSnapshotLoaded = true;
             }
         }
 

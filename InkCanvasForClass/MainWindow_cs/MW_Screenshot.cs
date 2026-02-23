@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -658,7 +658,9 @@ namespace Ink_Canvas {
             try {
                 if (config.IsCopyToClipboard) Clipboard.SetImage(BitmapToImageSource(bitmap));
             }
-            catch (NotSupportedException) { }
+            catch (NotSupportedException nsEx) {
+                LogHelper.NewLog(nsEx);
+            }
 
             if (config.IsSaveToLocal) {
                 var fullPath = config.BitmapSavePath.FullName;
@@ -675,7 +677,7 @@ namespace Ink_Canvas {
                         config.OutputMIMEType == OutputImageMIMEFormat.Bmp ? ImageFormat.Bmp : ImageFormat.Jpeg);
                 }
                 catch (Exception saveEx) {
-                    LogHelper.WriteLogToFile($"Error saving screenshot to file: {saveEx}", LogHelper.LogType.Error);
+                    LogHelper.NewLog(saveEx);
                     throw new Exception($"截图保存失败: {saveEx.Message}");
                 }
             }
@@ -716,12 +718,17 @@ namespace Ink_Canvas {
         }
 
         private void SaveScreenShotToDesktop() {
-            var bitmap = GetScreenshotBitmap();
-            string savePath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            bitmap.Save(savePath + @"\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
-            ShowNewToast("截图成功保存至【桌面" + @"\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png】",
-                MW_Toast.ToastType.Success, 3000);
-            if (Settings.Automation.IsAutoSaveStrokesAtScreenshot) SaveInkCanvasStrokes(false, false);
+            try {
+                var bitmap = GetScreenshotBitmap();
+                string savePath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                bitmap.Save(savePath + @"\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+                ShowNewToast("截图成功保存至【桌面" + @"\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png】",
+                    MW_Toast.ToastType.Success, 3000);
+                if (Settings.Automation.IsAutoSaveStrokesAtScreenshot) SaveInkCanvasStrokes(false, false);
+            } catch (Exception ex) {
+                LogHelper.NewLog(ex);
+                ShowNewToast("截图保存失败: " + ex.Message, MW_Toast.ToastType.Error, 5000);
+            }
         }
 
         private void SavePPTScreenshot(string fileName) {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace Ink_Canvas.Helpers
@@ -14,7 +14,7 @@ namespace Ink_Canvas.Helpers
 
         public static void NewLog(Exception ex)
         {
-
+            WriteLogToFile(ex.ToString(), LogType.Error);
         }
 
         public static void WriteLogToFile(string str, LogType logType = LogType.Info)

@@ -1,0 +1,6 @@
+- [x] `LogHelper.NewLog(Exception ex)` 能够正确将异常信息写入日志文件
+- [x] `SaveScreenShotToDesktop` 在保存失败时能够捕获异常并弹出 Toast 提示
+- [x] `FullscreenSnapshot` 在遇到不支持的操作时能够记录日志
+- [x] `StartAutomaticallyCreate` 在失败时能够记录异常日志
+- [x] `StartAutomaticallyDel` 在失败时能够记录异常日志
+- [x] `IconMouseUp` 在异步操作失败时不会导致程序崩溃，并且能够记录异常
