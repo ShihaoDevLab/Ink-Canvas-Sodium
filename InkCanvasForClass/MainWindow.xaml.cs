@@ -384,6 +384,7 @@ namespace Ink_Canvas {
 
             if (e.Cancel) LogHelper.WriteLogToFile("Ink Canvas closing cancelled", LogHelper.LogType.Event);
             else {
+                DisposeTimers();
                 DisposeFreezeFrame();
                 Application.Current.Shutdown();
             }
