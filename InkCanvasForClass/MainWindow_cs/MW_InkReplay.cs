@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -143,7 +143,7 @@ namespace Ink_Canvas {
         private volatile bool isStopInkReplay = false;
         private volatile bool isPauseInkReplay = false;
         private volatile bool isRestartInkReplay = false;
-        private volatile double inkReplaySpeed = 1;
+        private volatile float inkReplaySpeed = 1;
 
         private void InkCanvasForInkReplay_MouseDown(object sender, MouseButtonEventArgs e) {
             if (e.ClickCount == 2) {
@@ -214,10 +214,10 @@ namespace Ink_Canvas {
         private void InkReplaySpeedButtonBorder_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             InkReplaySpeedButtonBorder.Background = new SolidColorBrush(Colors.Transparent);
-            inkReplaySpeed = inkReplaySpeed == 0.5 ? 1 :
+            inkReplaySpeed = inkReplaySpeed == 0.5f ? 1 :
                 inkReplaySpeed == 1 ? 2 :
                 inkReplaySpeed == 2 ? 4 :
-                inkReplaySpeed == 4 ? 8 : 0.5;
+                inkReplaySpeed == 4 ? 8 : 0.5f;
             InkReplaySpeedTextBlock.Text = inkReplaySpeed + "x";
         }
 
