@@ -417,5 +417,8 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-.claude/settings.local.json
+# Visual Studio Code configuration files
 .vscode/
+
+# JetBrains Rider (and/or other JetBrains IDEs) configuration files
+.idea/

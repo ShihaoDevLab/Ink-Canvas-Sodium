@@ -29,6 +29,12 @@ using Image = System.Windows.Controls.Image;
 
 namespace Ink_Canvas {
     public partial class MainWindow : PerformanceTransparentWin {
+        #region Constants
+
+        private const string SettingsInitializationFailed = "设置功能初始化失败";
+        private const string SettingsPanelOpenFailed = "设置面板打开失败";
+
+        #endregion
         #region “手勢”按鈕
 
         /// <summary>
@@ -401,10 +407,9 @@ namespace Ink_Canvas {
                 RightSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
                 //进入黑板
 
-                new Thread(new ThreadStart(() => {
-                    Thread.Sleep(100);
+                Task.Delay(100).ContinueWith(_ => {
                     Application.Current.Dispatcher.Invoke(() => { ViewboxFloatingBarMarginAnimation(60); });
-                })).Start();
+                });
 
                 HideSubPanels();
                 if (GridTransparencyFakeBackground.Background == Brushes.Transparent) {
@@ -868,8 +873,7 @@ namespace Ink_Canvas {
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
-                /*if (forceEraser && currentMode == 0)
-                    BtnColorRed_Click(sender, null);*/
+
 
                 StackPanelCanvasControls.Visibility = Visibility.Visible;
                 CheckEnableTwoFingerGestureBtnVisibility(true);
@@ -885,33 +889,7 @@ namespace Ink_Canvas {
             {
                 if (inkCanvas.EditingMode == InkCanvasEditingMode.Ink)
                 {
-                    //if (PenPalette.Visibility == Visibility.Visible)
-                    //{
-                    //    AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
-                    //    AnimationsHelper.HideWithSlideAndFade(BorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(PenPalette);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
-                    //    AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
-                    //    AnimationsHelper.HideWithSlideAndFade(BorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(TwoFingerGestureBorder);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardTwoFingerGestureBorder);
-                    //}
-                    //else
-                    //{
-                    //    AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
-                    //    AnimationsHelper.HideWithSlideAndFade(BorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
-                    //    AnimationsHelper.HideWithSlideAndFade(BorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                    //    AnimationsHelper.HideWithSlideAndFade(TwoFingerGestureBorder);
-                    //    AnimationsHelper.HideWithSlideAndFade(BoardTwoFingerGestureBorder);
+
                     //    AnimationsHelper.ShowWithSlideFromBottomAndFade(PenPalette);
                     //    AnimationsHelper.ShowWithSlideFromBottomAndFade(BoardPenPalette);
                     //}
@@ -1183,7 +1161,9 @@ namespace Ink_Canvas {
                 HandleUserCustomStorageLocation();
                 
                 // 安全地获取存储路径
-                if (ComboBoxStoragePath?.SelectedIndex >= 0 && storageLocationItems?.Count > ComboBoxStoragePath.SelectedIndex) {
+                if (ComboBoxStoragePath != null && ComboBoxStoragePath.SelectedItem != null &&
+                    storageLocationItems != null && ComboBoxStoragePath.SelectedIndex >= 0 &&
+                    storageLocationItems.Count > ComboBoxStoragePath.SelectedIndex) {
                     InitStorageFoldersStructure(storageLocationItems[ComboBoxStoragePath.SelectedIndex].Path);
                 }
                 
@@ -1200,7 +1180,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex) {
                 LogHelper.WriteLogToFile($"Error in SymbolIconSettings_Click: {ex}", LogHelper.LogType.Error);
-                ShowNewToast("设置功能初始化失败", MW_Toast.ToastType.Error, 3000);
+                ShowNewToast(SettingsInitializationFailed, MW_Toast.ToastType.Error, 3000);
             }
         }
 
@@ -1668,7 +1648,7 @@ namespace Ink_Canvas {
             catch (Exception ex) {
                 LogHelper.WriteLogToFile($"Error in BtnSettings_Click: {ex}", LogHelper.LogType.Error);
                 isOpeningOrHidingSettingsPane = false;
-                ShowNewToast("设置面板打开失败", MW_Toast.ToastType.Error, 3000);
+                ShowNewToast(SettingsPanelOpenFailed, MW_Toast.ToastType.Error, 3000);
             }
         }
 

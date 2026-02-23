@@ -540,6 +540,6 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="v6\" />
-	</ItemGroup>
+    <Folder Include="v6\" />
+  </ItemGroup>
 </Project>

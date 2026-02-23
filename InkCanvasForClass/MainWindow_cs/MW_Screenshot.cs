@@ -30,14 +30,7 @@ namespace Ink_Canvas {
 
         #region Dubi906w 的轮子
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
-        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
-        private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+        // Note: SetWindowLong32, SetWindowLongPtr64, and GetWindowLongPtr are already defined in MainWindow.xaml.cs
 
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -89,11 +82,7 @@ namespace Ink_Canvas {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        // Note: GetWindowLong and SetWindowLong are already defined in MainWindow.xaml.cs
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool InvalidateRect(IntPtr hWnd, IntPtr lpRect, bool bErase);
@@ -429,7 +418,7 @@ namespace Ink_Canvas {
                         if (!isvisible) return true;
 
                         // 判斷窗體透明度和額外樣式
-                        var windowLong = (int)GetWindowLongPtr(hwnd, -20);
+                        var windowLong = (int)GetWindowLongPtrSmart(hwnd, -20);
                         GetLayeredWindowAttributes(hwnd, out uint crKey, out byte bAlpha, out uint dwFlags);
                         if ((windowLong & 0x00000080L) != 0) return true;
                         if ((windowLong & 0x00080000) != 0 && (dwFlags & 0x00000002) != 0 && bAlpha == 0) return true; //分层窗口且全透明

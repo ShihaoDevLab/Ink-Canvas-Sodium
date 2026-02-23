@@ -306,19 +306,33 @@ namespace Ink_Canvas {
             if (!Settings.Advanced.IsEnableResolutionChangeDetection) return;
             ShowNotification($"检测到显示器信息变化，变为{System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width}x{System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height}");
             new Thread(() => {
-                var isFloatingBarOutsideScreen = false;
-                var isInPPTPresentationMode = false;
-                Dispatcher.Invoke(() => {
-                    isFloatingBarOutsideScreen = IsOutsideOfScreenHelper.IsOutsideOfScreen(ViewboxFloatingBar);
-                    isInPPTPresentationMode = BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible;
-                });
-                if (isFloatingBarOutsideScreen) dpiChangedDelayAction.DebounceAction(3000, null, () => {
-                    if (!isFloatingBarFolded)
-                    {
-                        if (isInPPTPresentationMode) ViewboxFloatingBarMarginAnimation(60);
-                        else ViewboxFloatingBarMarginAnimation(100, true);
-                    }
-                });
+                try
+                {
+                    var isFloatingBarOutsideScreen = false;
+                    var isInPPTPresentationMode = false;
+                    Dispatcher.Invoke(() => {
+                        try
+                        {
+                            isFloatingBarOutsideScreen = IsOutsideOfScreenHelper.IsOutsideOfScreen(ViewboxFloatingBar);
+                            isInPPTPresentationMode = BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible;
+                        }
+                        catch (Exception ex)
+                        {
+                            LogHelper.WriteLogToFile($"Error in Dispatcher.Invoke: {ex}", LogHelper.LogType.Error);
+                        }
+                    });
+                    if (isFloatingBarOutsideScreen) dpiChangedDelayAction.DebounceAction(3000, null, () => {
+                        if (!isFloatingBarFolded)
+                        {
+                            if (isInPPTPresentationMode) ViewboxFloatingBarMarginAnimation(60);
+                            else ViewboxFloatingBarMarginAnimation(100, true);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.WriteLogToFile($"Error in display settings changed thread: {ex}", LogHelper.LogType.Error);
+                }
             }).Start();
         }
 
@@ -331,19 +345,33 @@ namespace Ink_Canvas {
                 ShowNotification($"系统DPI发生变化，从 {e.OldDpi.DpiScaleX}x{e.OldDpi.DpiScaleY} 变化为 {e.NewDpi.DpiScaleX}x{e.NewDpi.DpiScaleY}");
 
                 new Thread(() => {
-                    var isFloatingBarOutsideScreen = false;
-                    var isInPPTPresentationMode = false;
-                    Dispatcher.Invoke(() => {
-                        isFloatingBarOutsideScreen = IsOutsideOfScreenHelper.IsOutsideOfScreen(ViewboxFloatingBar);
-                        isInPPTPresentationMode = BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible;
-                    });
-                    if (isFloatingBarOutsideScreen) dpiChangedDelayAction.DebounceAction(3000,null, () => {
-                        if (!isFloatingBarFolded)
-                        {
-                            if (isInPPTPresentationMode) ViewboxFloatingBarMarginAnimation(60);
-                            else ViewboxFloatingBarMarginAnimation(100, true);
-                        }
-                    });
+                    try
+                    {
+                        var isFloatingBarOutsideScreen = false;
+                        var isInPPTPresentationMode = false;
+                        Dispatcher.Invoke(() => {
+                            try
+                            {
+                                isFloatingBarOutsideScreen = IsOutsideOfScreenHelper.IsOutsideOfScreen(ViewboxFloatingBar);
+                                isInPPTPresentationMode = BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible;
+                            }
+                            catch (Exception ex)
+                            {
+                                LogHelper.WriteLogToFile($"Error in Dispatcher.Invoke: {ex}", LogHelper.LogType.Error);
+                            }
+                        });
+                        if (isFloatingBarOutsideScreen) dpiChangedDelayAction.DebounceAction(3000,null, () => {
+                            if (!isFloatingBarFolded)
+                            {
+                                if (isInPPTPresentationMode) ViewboxFloatingBarMarginAnimation(60);
+                                else ViewboxFloatingBarMarginAnimation(100, true);
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.WriteLogToFile($"Error in DPI change thread: {ex}", LogHelper.LogType.Error);
+                    }
                 }).Start();
             }
         }
@@ -377,6 +405,17 @@ namespace Ink_Canvas {
 
         private void Window_Closed(object sender, EventArgs e) {
             SystemEvents.DisplaySettingsChanged -= SystemEventsOnDisplaySettingsChanged;
+
+            // 如果启用了 UserPreferenceChanged 事件，也需要取消订阅
+            // Microsoft.Win32.SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
+
+            // 清理智能鼠标穿透钩子
+            if (hwndSource != null)
+            {
+                hwndSource.RemoveHook(SmartHitTestWndProc);
+                hwndSource.Dispose();
+                hwndSource = null;
+            }
 
             LogHelper.WriteLogToFile("Ink Canvas closed", LogHelper.LogType.Event);
         }
@@ -426,28 +465,27 @@ namespace Ink_Canvas {
                     POINT cursorPos;
                     if (!GetCursorPos(out cursorPos))
                     {
-                        // Handle error
+                        LogHelper.WriteLogToFile("Failed to get cursor position in SmartHitTestWndProc", LogHelper.LogType.Error);
+                        return IntPtr.Zero;
                     }
-                    
+
                     // 转换为客户端坐标
                     var clientPos = PointFromScreen(new System.Windows.Point(cursorPos.X, cursorPos.Y));
-                    
+
                     // 检查鼠标是否在工具栏区域
                     if (IsPointInFloatingBar(clientPos) || IsPointInOtherUIElements(clientPos))
                     {
                         // 在工具栏区域，暂时禁用穿透
-                        var currentStyle = GetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART);
-                        SetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART, new IntPtr(currentStyle.ToInt64() & ~WS_EX_TRANSPARENT));
+                        SetWindowTransparentStyle(hwnd, false);
                     }
                     else
                     {
                         // 在画布区域，启用穿透
-                        var currentStyle = GetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART);
-                        SetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART, new IntPtr(currentStyle.ToInt64() | WS_EX_TRANSPARENT));
+                        SetWindowTransparentStyle(hwnd, true);
                     }
                 }
             }
-            
+
             return IntPtr.Zero;
         }
 
@@ -489,11 +527,44 @@ namespace Ink_Canvas {
             return false;
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetWindowLongPtrSmart(IntPtr hWnd, int nIndex);
+        private static IntPtr GetWindowLongPtrSmart(IntPtr hWnd, int nIndex)
+        {
+            return IntPtr.Size > 4
+                ? GetWindowLongPtr_x64(hWnd, nIndex)
+                : new IntPtr(GetWindowLong(hWnd, nIndex));
+        }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetWindowLongPtrSmart(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetWindowLongPtr")]
+        private static extern IntPtr GetWindowLongPtr_x64(IntPtr hWnd, int nIndex);
+
+        private static IntPtr SetWindowLongPtrSmart(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            return IntPtr.Size > 4
+                ? SetWindowLongPtr_x64(hWnd, nIndex, dwNewLong)
+                : new IntPtr(SetWindowLong(hWnd, nIndex, dwNewLong.ToInt32()));
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "SetWindowLongPtr")]
+        private static extern IntPtr SetWindowLongPtr_x64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private void SetWindowTransparentStyle(IntPtr hwnd, bool transparent)
+        {
+            var currentStyle = GetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART);
+            if (transparent)
+            {
+                SetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART, new IntPtr(currentStyle.ToInt64() | WS_EX_TRANSPARENT));
+            }
+            else
+            {
+                SetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART, new IntPtr(currentStyle.ToInt64() & ~WS_EX_TRANSPARENT));
+            }
+        }
 
         public void SetSmartHitTestThrough(bool enabled)
         {
@@ -502,8 +573,7 @@ namespace Ink_Canvas {
             {
                 // 禁用智能穿透，移除WS_EX_TRANSPARENT样式
                 var hwnd = new WindowInteropHelper(this).Handle;
-                var currentStyle = GetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART);
-                SetWindowLongPtrSmart(hwnd, GWL_EXSTYLE_SMART, new IntPtr(currentStyle.ToInt64() & ~WS_EX_TRANSPARENT));
+                SetWindowTransparentStyle(hwnd, false);
             }
         }
 
