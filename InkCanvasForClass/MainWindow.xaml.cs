@@ -286,7 +286,7 @@ namespace Ink_Canvas {
 
             PenPaletteV2Init();
             // SelectionV2Init(); // Disabled - FloatingToolBarV2 is disabled but not deleted
-            // ShapeDrawingV2Init(); // Disabled - FloatingToolBarV2 is disabled but not deleted
+            ShapeDrawingV2Init(); // Re-enabled for geometry functionality
 
             InitStorageManagementModule();
 
@@ -296,7 +296,7 @@ namespace Ink_Canvas {
 
             UpdateIndexInfoDisplay();
 
-            // 暂时禁用智能鼠标穿透
+            // 立即禁用智能鼠标穿透
             // InitSmartHitTestThrough();
 
             SetWindowPos(new WindowInteropHelper(this).Handle, new IntPtr(-1), 0, 0, 0, 0, 0x0002|0x0040|0x0001);

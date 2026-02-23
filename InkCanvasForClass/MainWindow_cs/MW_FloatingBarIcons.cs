@@ -801,7 +801,7 @@ namespace Ink_Canvas {
             GridTransparencyFakeBackground.Opacity = 0;
             GridTransparencyFakeBackground.Background = Brushes.Transparent;
 
-            // 启用智能鼠标穿透
+            // 禁用智能鼠标穿透
             // SetSmartHitTestThrough(true);
 
             GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
