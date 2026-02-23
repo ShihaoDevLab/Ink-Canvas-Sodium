@@ -166,11 +166,11 @@ namespace Ink_Canvas {
             SaveSettingsToFile();
         }
 
-        private void ToggleSwitchEnableWindowChromeRendering_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Startup.EnableWindowChromeRendering = ToggleSwitchEnableWindowChromeRendering.IsOn;
-            SaveSettingsToFile();
-        }
+        // private void ToggleSwitchEnableWindowChromeRendering_Toggled(object sender, RoutedEventArgs e) {
+        //     if (!isLoaded) return;
+        //     Settings.Startup.EnableWindowChromeRendering = ToggleSwitchEnableWindowChromeRendering.IsOn;
+        //     SaveSettingsToFile();
+        // }
 
         #endregion
 

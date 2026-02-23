@@ -173,7 +173,7 @@ namespace Ink_Canvas {
 
                 ToggleSwitchFoldAtStartup.IsOn = Settings.Startup.IsFoldAtStartup;
 
-                ToggleSwitchEnableWindowChromeRendering.IsOn = Settings.Startup.EnableWindowChromeRendering;
+                // ToggleSwitchEnableWindowChromeRendering.IsOn = Settings.Startup.EnableWindowChromeRendering;
 
             } else {
                 Settings.Startup = new Startup();
