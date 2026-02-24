@@ -627,6 +627,7 @@ namespace Ink_Canvas {
         }
 
         public async Task<Bitmap> FullscreenSnapshot(SnapshotConfig config) {
+            if (config == null) throw new ArgumentNullException(nameof(config));
             Bitmap bitmap = new Bitmap(1, 1);
             var ex = new List<HWND>() { new HWND(new WindowInteropHelper(this).Handle) };
             ex.AddRange(config.ExcludedHwnds);
@@ -663,15 +664,39 @@ namespace Ink_Canvas {
             }
 
             if (config.IsSaveToLocal) {
-                var fullPath = config.BitmapSavePath.FullName;
-                if (!config.BitmapSavePath.Exists) config.BitmapSavePath.Create();
-                var fileName = config.SaveBitmapFileName.Replace("[YYYY]", DateTime.Now.Year.ToString())
+                var saveDir = config.BitmapSavePath ??
+                              new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
+                var fullPath = saveDir.FullName;
+                if (!saveDir.Exists) saveDir.Create();
+
+                var fileNameTemplate = string.IsNullOrWhiteSpace(config.SaveBitmapFileName)
+                    ? "Screenshot-[YYYY]-[MM]-[DD]-[HH]-[mm]-[ss].png"
+                    : config.SaveBitmapFileName;
+
+                var fileName = fileNameTemplate.Replace("[YYYY]", DateTime.Now.Year.ToString())
                     .Replace("[MM]", DateTime.Now.Month.ToString()).Replace("[DD]", DateTime.Now.Day.ToString())
                     .Replace("[HH]", DateTime.Now.Hour.ToString()).Replace("[mm]", DateTime.Now.Minute.ToString())
                     .Replace("[ss]", DateTime.Now.Second.ToString()).Replace("[width]", bitmap.Width.ToString())
                     .Replace("[height]", bitmap.Height.ToString());
-                var finalPath = (fullPath.EndsWith("\\") ? fullPath.Substring(0, fullPath.Length - 1) : fullPath) +
-                                $"\\{fileName}";
+
+                var outputExt = config.OutputMIMEType == OutputImageMIMEFormat.Png
+                    ? ".png"
+                    : config.OutputMIMEType == OutputImageMIMEFormat.Bmp
+                        ? ".bmp"
+                        : ".jpg";
+
+                var currentExt = Path.GetExtension(fileName);
+                if (string.IsNullOrEmpty(currentExt)) {
+                    fileName += outputExt;
+                } else {
+                    var extMatches = config.OutputMIMEType == OutputImageMIMEFormat.Jpeg
+                        ? string.Equals(currentExt, ".jpg", StringComparison.OrdinalIgnoreCase) ||
+                          string.Equals(currentExt, ".jpeg", StringComparison.OrdinalIgnoreCase)
+                        : string.Equals(currentExt, outputExt, StringComparison.OrdinalIgnoreCase);
+                    if (!extMatches) fileName = Path.ChangeExtension(fileName, outputExt);
+                }
+
+                var finalPath = Path.Combine(fullPath, fileName);
                 try {
                     bitmap.Save(finalPath, config.OutputMIMEType == OutputImageMIMEFormat.Png ? ImageFormat.Png :
                         config.OutputMIMEType == OutputImageMIMEFormat.Bmp ? ImageFormat.Bmp : ImageFormat.Jpeg);
