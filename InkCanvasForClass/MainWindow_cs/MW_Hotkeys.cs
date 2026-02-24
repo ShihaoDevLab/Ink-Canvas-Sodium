@@ -54,6 +54,9 @@ namespace Ink_Canvas {
 
         private void Window_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Escape) KeyExit(null, null);
+            if (e.Key == Key.System && e.SystemKey == Key.F4 && (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt) {
+                Application.Current.Shutdown();
+            }
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

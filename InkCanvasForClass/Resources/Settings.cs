@@ -182,8 +182,8 @@ namespace Ink_Canvas
         public bool IsAutoEnterModeFinger { get; set; } = false;*/
         [JsonProperty("isFoldAtStartup")]
         public bool IsFoldAtStartup { get; set; } = false;
-        [JsonProperty("enableWindowChromeRendering")]
-        public bool EnableWindowChromeRendering { get; set; } = false;
+        // [JsonProperty("enableWindowChromeRendering")]
+        // public bool EnableWindowChromeRendering { get; set; } = false;
     }
 
     public class Appearance

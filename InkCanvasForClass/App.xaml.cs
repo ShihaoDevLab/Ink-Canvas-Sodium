@@ -131,21 +131,21 @@ namespace Ink_Canvas {
             }
 
 
-            var isUsingWindowChrome = false;
-            try {
-                if (File.Exists(App.RootPath + "Settings.json")) {
-                    try {
-                        string text = File.ReadAllText(App.RootPath + "Settings.json");
-                        var obj = JObject.Parse(text);
-                        isUsingWindowChrome = (bool)obj.SelectToken("startup.enableWindowChromeRendering");
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile($"Error parsing Settings.json: {ex}", LogHelper.LogType.Error);
-                    }
-                }
-            } catch (Exception ex) {
-                LogHelper.WriteLogToFile(ex.ToString(), LogHelper.LogType.Error);
-            }
+            // var isUsingWindowChrome = false;
+            // try {
+            //     if (File.Exists(App.RootPath + "Settings.json")) {
+            //         try {
+            //             string text = File.ReadAllText(App.RootPath + "Settings.json");
+            //             var obj = JObject.Parse(text);
+            //             isUsingWindowChrome = (bool)obj.SelectToken("startup.enableWindowChromeRendering");
+            //         }
+            //         catch (Exception ex) {
+            //             LogHelper.WriteLogToFile($"Error parsing Settings.json: {ex}", LogHelper.LogType.Error);
+            //         }
+            //     }
+            // } catch (Exception ex) {
+            //     LogHelper.WriteLogToFile(ex.ToString(), LogHelper.LogType.Error);
+            // }
 
             mainWin = new MainWindow();
             mainWin.Show();
