@@ -2094,7 +2094,7 @@ namespace Ink_Canvas {
                 SettingsStorageGroupBox,
                 SettingsSnapshotGroupBox,
                 SettingsRandWindowGroupBox,
-                SettingsDonationGroupBox,
+                // SettingsDonationGroupBox,
                 SettingsAboutGroupBox
             };
             
@@ -2110,7 +2110,7 @@ namespace Ink_Canvas {
                 SettingsStorageJumpToGroupBoxButton,
                 SettingsSnapshotJumpToGroupBoxButton,
                 SettingsRandWindowJumpToGroupBoxButton,
-                SettingsDonationJumpToGroupBoxButton,
+                // SettingsDonationJumpToGroupBoxButton,
                 SettingsAboutJumpToGroupBoxButton
             };
         }
