@@ -1,0 +1,211 @@
+{
+  "repo_notes": [
+    {
+      "content": 使用中文生成 Wiki。"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce Ink Canvas: its purpose as a WPF-based annotation and drawing application, its intended classroom/presentation use case, key capabilities (ink input, full-screen, PowerPoint integration, auto-update), version and ownership information, and a map of the major subsystems",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Application Bootstrap",
+      "purpose": "Describe how the application starts: single-instance enforcement via Mutex, global unhandled exception handling, App.RootPath initialization, logging startup, resource dictionary loading, and how App.xaml.cs wires together the entry point",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "System Tray and Context Menu",
+      "purpose": "Document the TaskbarIcon (hardcodet.net), the SysTrayMenu context menu structure, all menu items (hide main window, force full screen, fold floating bar, reset toolbar position, restart, close), their event handlers, and the dynamic eye icon toggle on the fold item",
+      "parent": "Application Bootstrap",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Ink Input and Canvas",
+      "purpose": "Explain the end-to-end ink pipeline: how touch and stylus input is captured, how strokes are built from StylusPoints and rendered via DrawingVisual, how shape recognition fits in, and how all committed changes feed into the undo/redo history",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Stroke Rendering",
+      "purpose": "Detail the VisualCanvas and StrokeVisual classes: how VisualCanvas hosts a DrawingVisual in the WPF visual tree, how StrokeVisual accumulates StylusPoints to build a Stroke, how DrawingAttributes control appearance, and how Redraw() re-renders the stroke",
+      "parent": "Ink Input and Canvas",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Shape Recognition",
+      "purpose": "Describe InkRecognizeHelper: the RecognizeShape stub and why InkAnalyzer is unavailable in .NET Core, the IsContainShapeType utility, the ShapeRecognizeResult structure, the RecognizeLanguage enum, and the Circle class used for relative shape positioning",
+      "parent": "Ink Input and Canvas",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Undo and Redo (TimeMachine)",
+      "purpose": "Document the TimeMachine history system: the TimeMachineHistoryType enum (UserInput, ShapeRecognition, Clear, Manipulation, DrawingAttributes), how each Commit method records state, how the current index pointer enables Undo and Redo, and the OnUndoStateChanged and OnRedoStateChanged events",
+      "parent": "Ink Input and Canvas",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Window Management",
+      "purpose": "Provide an overview of the systems that control window behavior at the Win32 level: full-screen mode, global hotkeys, touch edge gesture suppression, and utilities for querying foreground window and screen bounds",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Full-Screen Mode",
+      "purpose": "Explain FullScreenHelper in depth: saving and restoring WINDOWPLACEMENT and WindowStyles, stripping WS_THICKFRAME and WS_MAXIMIZEBOX, disabling DWM transition animations, the KeepFullScreenHook that intercepts WM_WINDOWPOSCHANGING to lock the window to full monitor coverage, and ITaskbarList2.MarkFullscreenWindow for taskbar notification",
+      "parent": "Window Management",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Global Hotkeys",
+      "purpose": "Document the Hotkey system: how Hotkey.Regist obtains an HWND, hooks WndProc via HwndSource, calls RegisterHotKey, and stores callbacks by ID; the HotkeyModifiers enum; WM_HOTKEY interception and callback dispatch; and UnRegist cleanup",
+      "parent": "Window Management",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Edge Gesture Control",
+      "purpose": "Document EdgeGestureUtil: how it calls SHGetPropertyStoreForWindow (shell32.dll) to obtain an IPropertyStore for the application window and sets the DISABLE_TOUCH_SCREEN property key to suppress Windows touch edge gestures that would otherwise interrupt ink input",
+      "parent": "Window Management",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Screen and Window Utilities",
+      "purpose": "Document ForegroundWindowInfo (P/Invoke wrappers for WindowTitle, WindowClassName, WindowRect, ProcessName, ProcessPath) and IsOutsideOfScreenHelper (checking whether a FrameworkElement's pixel bounds fall entirely outside all Screen.AllScreens entries)",
+      "parent": "Window Management",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Auto-Update System",
+      "purpose": "Describe the full auto-update pipeline: how CheckForUpdates fetches the remote version beacon (AutomaticUpdateVersionControl.txt), version comparison logic, DownloadSetupFileAndSaveStatus downloading from GitHub Releases into App.RootPath, the silence period feature with ComboBox UI, and the InstallNewVersionApp/Application.Shutdown sequence",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Utility Helpers",
+      "purpose": "Introduce the collection of small, single-purpose helper classes that support the rest of the application, with a summary of each and links to their individual sub-pages",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Animations",
+      "purpose": "Document AnimationsHelper: each show/hide method and the animation primitives it composes (opacity DoubleAnimation, TranslateTransform for slides, ScaleTransform for scale), CubicEase usage, visibility guard clauses, and the asymmetry between eager show and deferred-collapse hide",
+      "parent": "Utility Helpers",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Logging",
+      "purpose": "Document LogHelper: the LogType enum (Info, Trace, Error, Event), how WriteLogToFile formats entries with timestamp and type prefix, directory creation against App.RootPath, and the distinction between the NewLog convenience overloads and WriteLogToFile",
+      "parent": "Utility Helpers",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "File Maintenance and Debouncing",
+      "purpose": "Document DelAutoSavedFiles (age-based deletion of .icstk, .png, and Position files, plus recursive empty-directory pruning) and DelayActionHelper (the DelayAction debounce utility using System.Timers.Timer with optional ISynchronizeInvoke thread marshaling)",
+      "parent": "Utility Helpers",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "WPF Value Converters",
+      "purpose": "Document each IValueConverter: BooleanToVisibilityConverter (bool to Visible/Collapsed), VisibilityConverter (inverts Visibility), IntNumberToString (0 → '无限制', n → 'n人'), IntNumberToString2 (0 → '自动截图', n → 'n条'), and IsEnabledToOpacityConverter (true → 1.0, false → 0.35)",
+      "parent": "Utility Helpers",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Software Launcher",
+      "purpose": "Document SoftwareLauncher: how FindEasiCameraExecutablePath queries HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall for DisplayName, InstallLocation, and UninstallString to locate sweclauncher.exe, and how LaunchEasiCamera starts the process",
+      "parent": "Utility Helpers",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Build and Release",
+      "purpose": "Document the solution structure and build configuration matrix (Debug/Release × AnyCPU/ARM/ARM64/x64/x86), the GitHub Actions dotnet-desktop.yml workflow (triggers, dotnet publish flags, self-contained win-x64 single-file output, artifact upload), and the .gitignore conventions for the tooling ecosystem",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Contributing",
+      "purpose": "Guide contributors on reporting bugs (bug_report.md template fields and auto-applied 'bug' label) and requesting features (feature_request.md template and 'enhancement' label), plus a note on the development environment conventions implied by the .gitignore",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
